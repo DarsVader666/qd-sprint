@@ -1,0 +1,22 @@
+a = b = c; 的执行顺序和结合性？	右结合，等价 a = (b = c)：先 b = c 并返回 b 的引用，再 a = b。多数二元运算符左结合，赋值是例外。
+为什么 operator= 要返回 SimpleVector& 而不是 void？	链式赋值需要表达式有结果；返回 void 时 a = b = c 编译不过。返回 *this 才能连等。
+拷贝赋值第一步为什么要判 this == &other？	自赋值时先 delete 再读 other 就是读野指针；判等后直接 return *this。
+delete &temp; 错在哪？	temp 是栈对象，delete 只能释放 new 出来的内存；删栈对象是未定义行为，让它正常析构即可。
+为什么 reserve 里用 SimpleVector temp(n) 再 temp[i]=... 会崩？	构造函数只设了 capacity，temp 的 size 仍是 0，operator[] 的 assert(i < size) 直接失败。要么直接操作裸数组，要么先设 temp.m_size。
+push_back 扩容写成 reserve(m_size ? 1 : 2*m_size) 的两个错误？	size>0 时 reserve(1) 不扩容，随后越界写；size==0 时 reserve(0) 不分配，往 nullptr 写。应按 m_capacity 翻倍，空时给 1。
+拷贝构造只声明不定义，会怎样？	编译通过、链接失败 undefined reference；只有真正发生拷贝时才暴露。
+类里声明了 ~SimpleVector(); 却没定义，什么时候报错？	链接期 undefined reference，不是编译期。
+operator= 里 other 为空但 capacity>0，直接把 m_data 置 nullptr 有什么隐患？	容量虚高，后续 push_back 认为还有空间，往空指针写。应同时把 m_capacity 置 0。
+new int[n] 和 new int[n]() 的区别？	前者默认初始化，内置类型是随机值；后者值初始化为 0。
+size 和 capacity 的区别？	size 是已构造元素个数，capacity 是已分配可容纳个数，capacity >= size。
+reserve 的语义是什么？	只保证 capacity >= n，不改 size，也不构造元素；n <= capacity 时什么都不做。
+为什么按 2 倍扩容是均摊 O(1)？	总拷贝次数 1+2+4+...+n < 2n，均摊到每次 push_back 是常数。
+size_t 下 pop_back 直接 --m_size，当 size==0 时会发生什么？	下溢成极大值，必须先用 if 判空。
+assert 和异常分别用在哪？	assert 抓程序自身 bug，release 版会被去掉；用户输入、可恢复错误用异常（第 27 章）。
+拷贝赋值里先 delete 旧内存再 new 有什么问题？	new 失败时对象半毁、旧数据已丢；copy-and-swap 先构造副本再交换，更安全。
+拷贝赋值的四部曲是什么？	判自赋值、释放旧内存、深拷贝、返回 *this；更稳的写法是 copy-and-swap。
+深拷贝和浅拷贝的区别？	浅拷贝只复制指针，两个对象共享同一块堆内存，析构时 double free；深拷贝重新分配并逐个复制元素。
+为什么头文件里不要写 using namespace std;？	头文件会被复制进每个包含它的翻译单元，污染全局命名空间、可能引发歧义；写成 std::。
+for (int i = 0; i < m_size; ++i) 的编译警告说明了什么？	有符号和无符号比较，负数会被转成极大正数；循环变量应该用 std::size_t。
+现在这个 SimpleVector 算 Rule of Three 吗？	算：析构、拷贝构造、拷贝赋值都自定义了；移动构造和移动赋值等第 22 章补上就是 Rule of Five。
+什么时候必须自己写析构函数？	类直接持有资源（new 的内存、文件句柄）时；只含值成员的类用默认析构就够。
