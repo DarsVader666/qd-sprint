@@ -1,0 +1,46 @@
+# ---- 黑白棋靶场编译产物 ----
+code/stub
+code/stub_asan
+code/stub_tsan
+code/__pycache__/
+code/fail/
+
+# ---- 编译产物 / 可执行文件 ----
+# records/ 下只收源码，二进制一律不进库
+records/**
+!records/**/
+!records/**/*.cpp
+!records/**/*.h
+!records/**/*.hpp
+!records/**/*.md
+!records/**/*.txt
+!records/**/*.py
+!records/**/*.sh
+!records/**/Makefile
+
+*.o
+*.out
+*.exe
+a.out
+*_dbg
+
+# ---- 大体积外部资料 ----
+*.pdf
+
+# ---- 编辑器缓存 ----
+.vscode/browse.vc.db*
+.vscode/ipch/
+
+# ---- 系统 / 临时 ----
+.DS_Store
+*.swp
+*~
+in.txt
+out.txt
+
+# ---- 私有 ----
+sealed.txt
+.env
+
+# ---- 个人/自动化脚本，绝不入库 ----
+enaea-autoplay/

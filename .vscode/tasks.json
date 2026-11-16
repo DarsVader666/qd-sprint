@@ -1,0 +1,90 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: g++ build active file",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-std=c++20",
+                "-O0",
+                "-Wall",
+                "-Wextra",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "g++ 编译当前文件（C++20 + 警告）"
+        },
+        {
+            "type": "shell",
+            "label": "C/C++: g++ debug build (ASan, -O0)",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-std=c++20",
+                "-O0",
+                "-g3",
+                "-DLOCAL",
+                "-Wall",
+                "-Wextra",
+                "-fsanitize=address,undefined",
+                "-fno-omit-frame-pointer",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}_dbg"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "detail": "调试专用：-O0 保证变量不被优化 + ASan/UBSan 抓越界"
+        },
+        {
+            "label": "运行当前文件（外置终端，in.txt 作为输入）",
+            "type": "shell",
+            "command": "gnome-terminal",
+            "args": [
+                "--",
+                "bash",
+                "-c",
+                "cd '${fileDirname}' && './${fileBasenameNoExtension}' < in.txt; echo; echo '--- 按回车关闭 ---'; read"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "dependsOn": "C/C++: g++ build active file",
+            "problemMatcher": []
+        },
+        {
+            "label": "运行当前文件（外置终端，手动输入）",
+            "type": "shell",
+            "command": "gnome-terminal",
+            "args": [
+                "--",
+                "bash",
+                "-c",
+                "cd '${fileDirname}' && './${fileBasenameNoExtension}'; echo; echo '--- 按回车关闭 ---'; read"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "dependsOn": "C/C++: g++ build active file",
+            "problemMatcher": []
+        }
+    ]
+}
